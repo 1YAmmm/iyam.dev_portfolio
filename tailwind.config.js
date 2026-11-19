@@ -1,22 +1,30 @@
 /** @type {import('tailwindcss').Config} */
+
+// Palette tokens live in src/index.css as RGB channels so they can flip
+// between the dark "blueprint" and light "whiteprint" themes.
+const token = (name) => `rgb(var(--c-${name}) / <alpha-value>)`
+
 export default {
   content: ['./index.html', './src/**/*.{js,jsx}'],
-  darkMode: 'class',
   theme: {
     extend: {
       fontFamily: {
-        sans: ['DM Sans', 'sans-serif'],
-        mono: ['DM Mono', 'monospace'],
+        display: ['Quinn', 'Archivo', 'system-ui', 'sans-serif'],
+        sans: ['Archivo', 'system-ui', 'sans-serif'],
+        mono: ['"JetBrains Mono"', 'ui-monospace', 'monospace'],
       },
       colors: {
-        accent: '#7c6dfa',
-        accent2: '#a594ff',
-        teal: '#22d3b8',
-        coral: '#ff6b6b',
-        amber: '#ffb347',
+        bg: token('bg'),
+        surface: token('surface'),
+        raised: token('raised'),
+        muted: token('muted'),
+        soft: token('soft'),
+        fg: token('fg'),
+        line: 'rgb(var(--c-line) / var(--line-a))',
+        'line-strong': 'rgb(var(--c-line) / calc(var(--line-a) * 2))',
       },
-      backdropBlur: {
-        xs: '4px',
+      maxWidth: {
+        sheet: '1200px',
       },
     },
   },

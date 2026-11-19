@@ -1,6 +1,6 @@
 # Jeremiah Laman — Portfolio
 
-A modern, macOS-inspired developer portfolio built with **React + Vite + Tailwind CSS**.
+A modern, minimalist **blueprint-style** developer portfolio built with **React + Vite + Tailwind CSS**.
 
 ---
 
@@ -38,26 +38,31 @@ vercel
 ```
 src/
 ├── components/
-│   ├── Navbar.jsx        # Sticky nav with dark/light toggle
-│   ├── Hero.jsx          # Landing section with animated orbs
-│   ├── About.jsx         # Bio, stats, strengths
-│   ├── TechStack.jsx     # Tech grid with SVG icons
-│   ├── Experience.jsx    # IT Instructor work card
-│   ├── Projects.jsx      # 8 project cards with live links
-│   ├── Contact.jsx       # Contact info + form
-│   ├── Footer.jsx        # Footer with quick links
-│   └── Icons.jsx         # All SVG icons (no icon libraries)
+│   ├── ui.jsx            # Shared primitives: Section, Rule, Tag, Arrow, gridCell()
+│   ├── PhoneFrame.jsx    # iPhone mockup (status bar auto-tinted, carousel)
+│   ├── Navbar.jsx        # Fixed nav, active-section highlight, theme toggle
+│   ├── Hero.jsx          # Title block + spec strip
+│   ├── About.jsx         # Bio + core strengths
+│   ├── TechStack.jsx     # Tech grid with monochrome line glyphs
+│   ├── Experience.jsx    # IT Instructor role
+│   ├── Projects.jsx      # Project sheets, each in an iPhone frame
+│   ├── Contact.jsx       # Email CTA + contact cells
+│   ├── Footer.jsx
+│   └── Icons.jsx         # Sun / moon icons
 │
 ├── hooks/
-│   ├── useScrollAnimation.js   # IntersectionObserver for fade-ins
-│   └── useTheme.js             # Dark/light mode toggle + localStorage
+│   ├── useScrollAnimation.js   # IntersectionObserver for .fade-in reveals
+│   └── useTheme.js             # Blueprint / whiteprint toggle + localStorage
 │
 ├── data/
 │   └── portfolio.js      # ← Edit ALL your content here
 │
-├── App.jsx               # Root — assembles all sections
-├── main.jsx              # React entry point
-└── index.css             # CSS variables + global base styles
+├── App.jsx
+├── main.jsx
+└── index.css             # Palette tokens, blueprint grid, iPhone frame styles
+
+public/img/previews/      # iPhone-size screenshots of the web projects (780×1688)
+public/img/*.jpg          # Mobile app screenshots
 ```
 
 ---
@@ -100,27 +105,36 @@ await fetch('https://formspree.io/f/YOUR_FORM_ID', {
 
 ## 🎨 Design System
 
-All colors are CSS custom properties defined in `src/index.css`:
+Palette tokens are RGB channels in `src/index.css`, exposed to Tailwind as
+`bg`, `surface`, `raised`, `muted`, `soft`, `fg` and `line`.
 
-| Variable       | Dark Mode           | Light Mode          |
-|----------------|---------------------|---------------------|
-| `--bg`         | `#0a0a0f`           | `#f5f5fa`           |
-| `--bg2`        | `#111118`           | `#ebebf5`           |
-| `--surface`    | `rgba(255,255,255,0.04)` | `rgba(0,0,0,0.03)` |
-| `--accent`     | `#7c6dfa`           | `#5b4ee8`           |
-| `--accent2`    | `#a594ff`           | `#7c6dfa`           |
-| `--teal`       | `#22d3b8`           | `#22d3b8`           |
-| `--text`       | `#f0f0f5`           | `#0d0d1a`           |
-| `--text2`      | `#a0a0b8`           | `#4a4a6a`           |
+| Token      | Blueprint (dark) | Whiteprint (light) |
+|------------|------------------|--------------------|
+| `bg`       | `#06141B`        | `#CCD0CF`          |
+| `surface`  | `#11212D`        | `#DADDDC`          |
+| `raised`   | `#253745`        | `#9BA8AB`          |
+| `muted`    | `#4A5C6A`        | `#4A5C6A`          |
+| `soft`     | `#9BA8AB`        | `#253745`          |
+| `fg`       | `#CCD0CF`        | `#06141B`          |
 
-Toggle light mode by adding the `light` class to `<body>` (handled by `useTheme.js`).
+Light mode adds the `light` class to `<body>` (handled by `useTheme.js`).
+
+### Project previews
+
+- **Web projects:** set `preview: "/img/previews/<name>.jpg"` — a 390×844 @2x mobile screenshot.
+- **Mobile apps:** set `isMobile: true` and `images: [...]` — they crossfade in the phone.
+  `screenTrim` crops the top fraction of each screenshot (hides an Android status bar).
+- No preview? The phone shows a blueprint placeholder with the project's initials.
 
 ---
 
 ## 🖋️ Fonts
 
-- **DM Sans** — headings & body (loaded from Google Fonts)
-- **DM Mono** — labels, tags, badges
+- **QUINN** — display headings. Free for personal use (by arraf studio), so it is
+  self-hosted: save the font as `public/fonts/Quinn.otf`. Until it's there, headings
+  fall back to Archivo Black-weight.
+- **Archivo** — body text (Google Fonts)
+- **JetBrains Mono** — blueprint labels, tags and annotations (Google Fonts)
 
 ---
 

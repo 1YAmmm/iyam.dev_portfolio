@@ -1,133 +1,71 @@
-import { useState } from 'react'
 import { personal } from '../data/portfolio'
-import { IconMail, IconPhone, IconPin, IconSend } from './Icons'
+import { Section, Arrow, gridCell } from './ui'
 
-const contactItems = [
-  {
-    label: 'EMAIL',
-    value: personal.email,
-    href: `mailto:${personal.email}`,
-    Icon: IconMail,
-  },
-  {
-    label: 'PHONE',
-    value: personal.phone,
-    href: `tel:${personal.phone.replace(/\s/g, '')}`,
-    Icon: IconPhone,
-  },
-  {
-    label: 'LOCATION',
-    value: personal.location,
-    href: null,
-    Icon: IconPin,
-  },
-]
+// Email is the big call-to-action above, so the cells cover the rest.
+const items = [
+  { label: 'Phone', value: personal.phone, href: `tel:${personal.phone.replace(/\s/g, '')}` },
+  { label: 'GitHub', value: personal.github?.replace(/^https?:\/\//, ''), href: personal.github, external: true },
+  { label: 'Location', value: personal.location },
+].filter((x) => x.value)
 
 export default function Contact() {
-  const [form, setForm] = useState({ name: '', email: '', message: '' })
-  const [sent, setSent] = useState(false)
-
-  function handleSubmit(e) {
-    e.preventDefault()
-  
-    setSent(true)
-    setTimeout(() => setSent(false), 4000)
-    setForm({ name: '', email: '', message: '' })
-  }
-
   return (
-    <section
+    <Section
       id="contact"
-      style={{ padding: 'clamp(60px, 8vw, 120px) clamp(1rem, 6vw, 4rem)', background: 'var(--bg2)' }}
+      title="Let's work together"
+      intro="I'm open to new opportunities. Have a project, a role, or just want to connect — reach out."
     >
-      <div style={{ maxWidth: '1100px', margin: '0 auto' }}>
-        <p className="fade-in" style={{ fontFamily: '"DM Mono", monospace', fontSize: '11px', color: 'var(--accent)', letterSpacing: '2px', textTransform: 'uppercase', marginBottom: '12px' }}>
-          05 · Contact
-        </p>
-        <h2 className="fade-in" style={{ fontSize: 'clamp(28px, 4vw, 44px)', fontWeight: 600, letterSpacing: '-1px', marginBottom: '12px', color: 'var(--text)' }}>
-          Let's work together
-        </h2>
-        <p className="fade-in" style={{ fontSize: '15px', color: 'var(--text2)', maxWidth: '480px', lineHeight: 1.7 }}>
-          I'm actively looking for entry-level opportunities. Whether you have a project, a role, or just want to connect — reach out.
-        </p>
+      {/* Primary call to action */}
+      <a
+        href={`mailto:${personal.email}`}
+        className="fade-in pad-x group flex items-center justify-between gap-6 border-t border-line py-10 transition-colors hover:bg-surface/60 sm:py-14"
+      >
+        <span className="min-w-0">
+          <span className="label block text-muted">Write to me</span>
+          <span className="mt-4 block break-all text-[clamp(1.4rem,4.4vw,3.25rem)] font-medium leading-none tracking-tight text-fg">
+            {personal.email}
+          </span>
+        </span>
+        <span className="grid h-12 w-12 shrink-0 place-items-center border border-line-strong transition-colors group-hover:border-fg group-hover:bg-fg group-hover:text-bg sm:h-16 sm:w-16">
+          <Arrow size={20} />
+        </span>
+      </a>
 
-        <div style={{
-          display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))',
-          gap: 'clamp(24px, 4vw, 60px)',
-          marginTop: '48px',
-          alignItems: 'start',
-        }}>
-          {/* Contact info */}
-          <div className="fade-in" style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
-            {contactItems.map(({ label, value, href, Icon }) => {
-              const inner = (
-                <>
-                  <div style={{
-                    width: '40px', height: '40px',
-                    borderRadius: '10px',
-                    background: 'var(--accent3)',
-                    border: '0.5px solid rgba(124,109,250,0.25)',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    flexShrink: 0,
-                  }}>
-                    <Icon size={18} color="var(--accent2)" />
-                  </div>
-                  <div>
-                    <div style={{ fontSize: '11px', color: 'var(--text3)', fontFamily: '"DM Mono", monospace', letterSpacing: '0.5px', marginBottom: '2px' }}>
-                      {label}
-                    </div>
-                    <div style={{ fontSize: '14px', color: 'var(--text)', fontWeight: 500 }}>
-                      {value}
-                    </div>
-                  </div>
-                </>
-              )
-
-              const shared = {
-                display: 'flex',
-                alignItems: 'center',
-                gap: '14px',
-                background: 'var(--surface)',
-                border: '0.5px solid var(--border)',
-                borderRadius: '12px',
-                padding: '20px 22px',
-                transition: 'border-color 0.2s, background 0.2s, transform 0.2s',
-              }
-
-              if (href) {
-                return (
-                  <a
-                    key={label}
-                    href={href}
-                    style={{ ...shared, textDecoration: 'none', cursor: 'pointer' }}
-                    onMouseEnter={(e) => {
-                      e.currentTarget.style.borderColor = 'var(--border2)'
-                      e.currentTarget.style.background = 'var(--surface2)'
-                      e.currentTarget.style.transform = 'translateX(4px)'
-                    }}
-                    onMouseLeave={(e) => {
-                      e.currentTarget.style.borderColor = 'var(--border)'
-                      e.currentTarget.style.background = 'var(--surface)'
-                      e.currentTarget.style.transform = 'translateX(0)'
-                    }}
-                  >
-                    {inner}
-                  </a>
-                )
-              }
-
-              return (
-                <div key={label} style={{ ...shared, cursor: 'default' }}>
-                  {inner}
-                </div>
-              )
-            })}
-          </div>   
-        </div>
-      </div>
-    </section>
+      <ul className="grid border-t border-line sm:grid-cols-3">
+        {items.map(({ label, value, href, external }, i) => {
+          const cls = `pad-x flex h-full items-start justify-between gap-3 py-6 ${
+            href ? 'transition-colors hover:bg-surface/60' : ''
+          }`
+          const body = (
+            <>
+              <span className="min-w-0">
+                <span className="label block text-muted">{label}</span>
+                <span className="mt-3 block truncate text-[15px] text-fg">{value}</span>
+              </span>
+              {href && (
+                <span className="text-muted">
+                  <Arrow />
+                </span>
+              )}
+            </>
+          )
+          return (
+            <li key={label} className={`fade-in ${gridCell(i, items.length, { base: 1, sm: 3 })}`}>
+              {href ? (
+                <a
+                  href={href}
+                  className={cls}
+                  {...(external ? { target: '_blank', rel: 'noopener noreferrer' } : {})}
+                >
+                  {body}
+                </a>
+              ) : (
+                <div className={cls}>{body}</div>
+              )}
+            </li>
+          )
+        })}
+      </ul>
+    </Section>
   )
 }

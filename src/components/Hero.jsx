@@ -1,222 +1,64 @@
-import { personal } from '../data/portfolio'
-import { IconProjects, IconMail } from './Icons'
-
-function smoothScroll(e, href) {
-  e.preventDefault()
-  document.querySelector(href)?.scrollIntoView({ behavior: 'smooth' })
-}
+import { personal, stats } from '../data/portfolio'
+import { Arrow, gridCell } from './ui'
 
 export default function Hero() {
+  const [first, ...rest] = personal.name.split(' ')
+
   return (
-    <section
-      id="hero"
-      style={{
-        minHeight: '100vh',
-        display: 'flex',
-        alignItems: 'center',
-        position: 'relative',
-        overflow: 'hidden',
-        paddingTop: '60px',
-        padding: '60px clamp(1rem, 6vw, 4rem) 0',
-      }}
-    >
-      {/* Background effects */}
-      <div style={{ position: 'absolute', inset: 0, pointerEvents: 'none', overflow: 'hidden' }}>
-        {/* Grid */}
-        <div style={{
-          position: 'absolute', inset: 0,
-          backgroundImage: 'linear-gradient(var(--border) 1px, transparent 1px), linear-gradient(90deg, var(--border) 1px, transparent 1px)',
-          backgroundSize: '60px 60px',
-          opacity: 0.4,
-        }} />
-        {/* Purple orb */}
-        <div style={{
-          position: 'absolute',
-          width: '500px', height: '500px',
-          borderRadius: '50%',
-          background: 'radial-gradient(circle, var(--accent), transparent 70%)',
-          top: '-100px', right: '-100px',
-          filter: 'blur(80px)',
-          opacity: 0.35,
-        }} />
-        {/* Teal orb */}
-        <div style={{
-          position: 'absolute',
-          width: '400px', height: '400px',
-          borderRadius: '50%',
-          background: 'radial-gradient(circle, var(--teal), transparent 70%)',
-          bottom: '-50px', left: '-100px',
-          filter: 'blur(80px)',
-          opacity: 0.18,
-        }} />
-      </div>
+    <section id="hero" className="pt-16">
+      <div className="sheet">
+        <div className="pad-x pb-14 pt-14 sm:pb-20 sm:pt-24">
+          {/* Title-block meta */}
+          <div className="fade-in flex flex-wrap items-center justify-between gap-4">
+            <p className="label inline-flex items-center gap-2.5 border border-line px-3 py-2">
+              <span className="animate-blink h-1.5 w-1.5 bg-fg" />
+              {personal.tagline}
+            </p>
+            <p className="label text-muted">Portfolio — Rev. {new Date().getFullYear()}</p>
+          </div>
 
-      {/* Content */}
-      <div style={{ position: 'relative', zIndex: 2, maxWidth: '1100px', margin: '0 auto', width: '100%' }}>
-        {/* Badge */}
-        <div
-          className="fade-in"
-          style={{
-            display: 'inline-flex',
-            alignItems: 'center',
-            gap: '8px',
-            background: 'var(--accent3)',
-            border: '0.5px solid rgba(124,109,250,0.3)',
-            padding: '6px 14px',
-            borderRadius: '100px',
-            fontSize: '12px',
-            color: 'var(--accent2)',
-            marginBottom: '28px',
-            fontFamily: '"DM Mono", monospace',
-          }}
-        >
-          <span
-            className="animate-pulse-dot"
-            style={{ width: '6px', height: '6px', borderRadius: '50%', background: 'var(--teal)' }}
-          />
-          {personal.tagline}
+          {/* Name */}
+          <h1 className="fade-in delay-1 font-display mt-10 text-[clamp(3.25rem,12.5vw,10.5rem)] leading-[0.84] sm:mt-14">
+            {first}
+            <br />
+            <span className="text-soft">{rest.join(' ')}</span>
+          </h1>
+
+          {/* Dimension line */}
+          <div className="fade-in delay-2 dim-ends mt-8 sm:mt-10">
+            <div className="dim">
+              <span className="label shrink-0 text-soft">
+                {personal.role}
+                <span className="mx-1.5 hidden text-muted sm:inline">·</span>
+                <span className="hidden sm:inline">{personal.title}</span>
+              </span>
+            </div>
+          </div>
+
+          <div className="mt-10 grid gap-10 sm:mt-12 lg:grid-cols-12 lg:items-end">
+            <p className="fade-in delay-2 max-w-xl text-base leading-relaxed text-soft sm:text-lg lg:col-span-7">
+              {personal.description}
+            </p>
+            <div className="fade-in delay-3 flex flex-wrap gap-3 lg:col-span-5 lg:justify-end">
+              <a href="#projects" className="btn-primary">
+                View projects <Arrow dir="s" />
+              </a>
+              <a href="#contact" className="btn-ghost">
+                Contact me <Arrow dir="e" />
+              </a>
+            </div>
+          </div>
         </div>
 
-        {/* Name */}
-        <h1
-          className="fade-in delay-1"
-          style={{
-            fontSize: 'clamp(40px, 7vw, 88px)',
-            fontWeight: 600,
-            lineHeight: 1,
-            letterSpacing: '-2px',
-            marginBottom: '16px',
-            color: 'var(--text)',
-          }}
-        >
-          {personal.name.split(' ')[0]}
-          <br />
-          <span style={{ color: 'var(--accent2)' }}>{personal.name.split(' ')[1]}</span>
-        </h1>
-
-        {/* Title */}
-        <p
-          className="fade-in delay-2"
-          style={{
-            fontSize: 'clamp(16px, 2.5vw, 22px)',
-            color: 'var(--text2)',
-            fontWeight: 300,
-            marginBottom: '20px',
-            letterSpacing: '-0.2px',
-          }}
-        >
-          {personal.title}
-        </p>
-
-        {/* Description */}
-        <p
-          className="fade-in delay-2"
-          style={{
-            fontSize: 'clamp(14px, 1.6vw, 16px)',
-            color: 'var(--text3)',
-            maxWidth: '520px',
-            lineHeight: 1.8,
-            marginBottom: '40px',
-          }}
-        >
-          {personal.description}
-        </p>
-
-        {/* CTA Buttons */}
-        <div className="fade-in delay-3" style={{ display: 'flex', gap: '14px', flexWrap: 'wrap' }}>
-          <a
-            href="#projects"
-            onClick={(e) => smoothScroll(e, '#projects')}
-            style={{
-              display: 'inline-flex',
-              alignItems: 'center',
-              gap: '8px',
-              padding: '12px 24px',
-              borderRadius: '100px',
-              fontSize: '14px',
-              fontWeight: 500,
-              background: 'var(--accent)',
-              color: '#fff',
-              textDecoration: 'none',
-              boxShadow: '0 0 24px var(--glow)',
-              transition: 'background 0.2s, transform 0.2s, box-shadow 0.2s',
-              border: 'none',
-              fontFamily: '"DM Sans", sans-serif',
-            }}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.background = 'var(--accent2)'
-              e.currentTarget.style.transform = 'translateY(-2px)'
-              e.currentTarget.style.boxShadow = '0 4px 32px var(--glow)'
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.background = 'var(--accent)'
-              e.currentTarget.style.transform = 'translateY(0)'
-              e.currentTarget.style.boxShadow = '0 0 24px var(--glow)'
-            }}
-          >
-            <IconProjects size={15} color="#fff" />
-            View Projects
-          </a>
-
-          <a
-            href="#contact"
-            onClick={(e) => smoothScroll(e, '#contact')}
-            style={{
-              display: 'inline-flex',
-              alignItems: 'center',
-              gap: '8px',
-              padding: '12px 24px',
-              borderRadius: '100px',
-              fontSize: '14px',
-              fontWeight: 500,
-              background: 'var(--surface2)',
-              color: 'var(--text2)',
-              border: '0.5px solid var(--border2)',
-              textDecoration: 'none',
-              transition: 'background 0.2s, color 0.2s, transform 0.2s',
-              fontFamily: '"DM Sans", sans-serif',
-            }}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.background = 'var(--border)'
-              e.currentTarget.style.color = 'var(--text)'
-              e.currentTarget.style.transform = 'translateY(-2px)'
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.background = 'var(--surface2)'
-              e.currentTarget.style.color = 'var(--text2)'
-              e.currentTarget.style.transform = 'translateY(0)'
-            }}
-          >
-            <IconMail size={15} color="currentColor" />
-            Contact Me
-          </a>
-        </div>
-      </div>
-
-      {/* Scroll indicator */}
-      <div style={{
-        position: 'absolute',
-        bottom: '40px',
-        left: '50%',
-        transform: 'translateX(-50%)',
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
-        gap: '8px',
-        color: 'var(--text3)',
-        fontSize: '11px',
-        fontFamily: '"DM Mono", monospace',
-        letterSpacing: '1px',
-      }}>
-        <div
-          className="animate-scroll-line"
-          style={{
-            width: '1px',
-            height: '48px',
-            background: 'linear-gradient(to bottom, var(--accent), transparent)',
-          }}
-        />
-        <span>SCROLL</span>
+        {/* Spec strip */}
+        <dl className="grid grid-cols-2 border-t border-line md:grid-cols-4">
+          {stats.map(({ num, label }, i) => (
+            <div key={label} className={`fade-in pad-x py-6 sm:py-8 ${gridCell(i, stats.length, { base: 2, md: 4 })}`}>
+              <dt className="label">{label}</dt>
+              <dd className="font-display mt-3 text-4xl sm:text-5xl">{num}</dd>
+            </div>
+          ))}
+        </dl>
       </div>
     </section>
   )

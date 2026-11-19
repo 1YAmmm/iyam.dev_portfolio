@@ -1,222 +1,98 @@
-import { projects } from "../data/portfolio";
-import { ProjectIcon, IconExternalLink } from "./Icons";
-import { useState, useEffect } from "react";
+import { projects } from '../data/portfolio'
+import PhoneFrame from './PhoneFrame'
+import { Section, Tag, Arrow, gridCell, pad } from './ui'
 
-function ProjectCard({ project, delay }) {
-  const {
-    name,
-    description,
-    tags,
-    link,
-    iconColor,
-    iconType,
-    isMobile,
-    images,
-  } = project;
+const COLS = { base: 1, md: 2, lg: 3 }
 
-  const delayClass = delay === 1 ? " delay-1" : delay === 2 ? " delay-2" : "";
+function host(url) {
+  try {
+    return new URL(url).host
+  } catch {
+    return null
+  }
+}
 
-  const [currentIndex, setCurrentIndex] = useState(0);
-
-  const hasImages = images && images.length > 0;
-
-  //  Auto-slide
-  useEffect(() => {
-    if (!hasImages) return;
-
-    const interval = setInterval(() => {
-      setCurrentIndex((prev) => (prev === images.length - 1 ? 0 : prev + 1));
-    }, 2500);
-
-    return () => clearInterval(interval);
-  }, [images]);
+function ProjectCard({ project, i }) {
+  const { name, description, tags, link, preview, images, isMobile, screenTrim = 0 } = project
+  const shots = isMobile ? images ?? [] : preview ? [preview] : []
+  const domain = link && host(link)
 
   return (
-    <div
-      className={`fade-in${delayClass}`}
-      style={{
-        background: isMobile
-          ? "linear-gradient(135deg, rgba(34,211,184,0.06), rgba(124,109,250,0.06))"
-          : "var(--surface)",
-        border: `0.5px solid ${isMobile ? "rgba(34,211,184,0.2)" : "var(--border)"}`,
-        borderRadius: "24px",
-        padding: "28px",
-        display: "flex",
-        flexDirection: "column",
-        transition: "all 0.3s",
-      }}
-      onMouseEnter={(e) => {
-        e.currentTarget.style.transform = "translateY(-6px)";
-        e.currentTarget.style.boxShadow = "0 20px 60px rgba(0,0,0,0.3)";
-      }}
-      onMouseLeave={(e) => {
-        e.currentTarget.style.transform = "translateY(0)";
-        e.currentTarget.style.boxShadow = "none";
-      }}
-    >
-      {/* Top */}
-      <div
-        style={{
-          display: "flex",
-          justifyContent: "space-between",
-          marginBottom: "16px",
-        }}
-      >
+    <article className={`fade-in group flex flex-col ${gridCell(i, projects.length, COLS)}`}>
+      {/* Stage */}
+      <div className="grid-dense relative flex justify-center overflow-hidden px-6 pb-8 pt-14">
         <div
-          style={{
-            width: "44px",
-            height: "44px",
-            borderRadius: "12px",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            background: isMobile ? "rgba(34,211,184,0.1)" : "var(--accent3)",
-          }}
-        >
-          <ProjectIcon type={iconType} color={iconColor} size={22} />
-        </div>
+          className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_50%_40%,rgb(var(--c-surface)/0.9),transparent_70%)]"
+          aria-hidden="true"
+        />
+        <span className="label absolute left-4 top-4 text-muted">Fig. {pad(i + 1)}</span>
+        <span className="absolute right-4 top-3.5">
+          <Tag>{isMobile ? 'Mobile app' : 'Web app'}</Tag>
+        </span>
 
-        {link ? (
-          <a href={link} target="_blank" rel="noopener noreferrer">
-            <IconExternalLink size={14} />
-          </a>
-        ) : (
-          <span style={{ fontSize: "10px", color: "var(--teal)" }}>
-            Mobile App
-          </span>
-        )}
-      </div>
-
-      {/*  iPhone Mockup ONLY for mobile */}
-      {isMobile && hasImages && (
-        <div
-          style={{
-            display: "flex",
-            justifyContent: "center",
-            marginBottom: "20px",
-          }}
-        >
-          <div
-            style={{
-              width: "500px",
-              height: "500px",
-              borderRadius: "28px",
-              background: "#000",
-              padding: "3px",
-              position: "relative",
-              boxShadow: "0 10px 40px rgba(0,0,0,0.6)",
-            }}
-          >
-            {/* Notch */}
-            <div
-              style={{
-                position: "absolute",
-                top: "6px",
-                left: "50%",
-                transform: "translateX(-50%)",
-                width: "50px",
-                height: "12px",
-                background: "#111",
-                borderRadius: "10px",
-                zIndex: 2,
-              }}
-            />
-
-            {/* Screen */}
-            <div
-              style={{
-                width: "100%",
-                height: "100%",
-                borderRadius: "22px",
-                overflow: "hidden",
-                position: "relative",
-              }}
-            >
-              <img
-                src={images[currentIndex]}
-                alt={name}
-                style={{
-                  width: "100%",
-                  height: "100%",
-                  objectFit: "cover",
-                }}
-              />
-
-              {/* Dots (clickable) */}
-              <div
-                style={{
-                  position: "absolute",
-                  bottom: "6px",
-                  width: "100%",
-                  display: "flex",
-                  justifyContent: "center",
-                  gap: "4px",
-                }}
-              >
-                {images.map((_, i) => (
-                  <div
-                    key={i}
-                    onClick={() => setCurrentIndex(i)}
-                    style={{
-                      width: "6px",
-                      height: "6px",
-                      borderRadius: "50%",
-                      cursor: "pointer",
-                      background:
-                        i === currentIndex ? "#fff" : "rgba(255,255,255,0.3)",
-                    }}
-                  />
-                ))}
+        <div className="relative flex flex-col items-center transition-transform duration-500 ease-out group-hover:-translate-y-1.5">
+          <PhoneFrame images={shots} name={name} width={196} trim={screenTrim} />
+          {shots.length < 2 && (
+            <div className="dim-ends mt-5 w-[196px]" aria-hidden="true">
+              <div className="dim">
+                <span className="font-mono text-[9px] tracking-[0.12em]">390 × 844</span>
               </div>
             </div>
+          )}
+        </div>
+      </div>
+
+      {/* Body */}
+      <div className="flex flex-1 flex-col border-t border-line px-6 py-6">
+        <p className="label text-muted">P.{pad(i + 1)}</p>
+        <h3 className="font-display mt-3 text-[1.65rem] leading-[0.95]">{name}</h3>
+        <p className="mt-3 text-sm leading-relaxed text-soft">{description}</p>
+
+        <ul className="mt-5 flex flex-wrap gap-1.5">
+          {tags.map((tag) => (
+            <li key={tag}>
+              <Tag>{tag}</Tag>
+            </li>
+          ))}
+        </ul>
+
+        <div className="mt-auto pt-6">
+          <div className="flex items-center justify-between gap-4 border-t border-line pt-4">
+            {link ? (
+              <a
+                href={link}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="label inline-flex items-center gap-2 text-fg transition-opacity hover:opacity-70"
+              >
+                Visit live <Arrow />
+              </a>
+            ) : (
+              <span className="label">Android build</span>
+            )}
+            <span className="truncate font-mono text-[10px] text-muted">{domain ?? 'React Native'}</span>
           </div>
         </div>
-      )}
-
-      {/* Name */}
-      <h3 style={{ fontSize: "18px", marginBottom: "8px" }}>{name}</h3>
-
-      {/* Description */}
-      <p style={{ fontSize: "13px", marginBottom: "16px" }}>{description}</p>
-
-      {/* Tags */}
-      <div style={{ display: "flex", flexWrap: "wrap", gap: "6px" }}>
-        {tags.map((tag) => (
-          <span
-            key={tag}
-            style={{
-              fontSize: "10px",
-              padding: "4px 10px",
-              borderRadius: "100px",
-              background: "var(--surface2)",
-            }}
-          >
-            {tag}
-          </span>
-        ))}
       </div>
-    </div>
-  );
+    </article>
+  )
 }
 
 export default function Projects() {
-  return (
-    <section id="projects" style={{ padding: "80px 20px" }}>
-      <div style={{ maxWidth: "1100px", margin: "0 auto" }}>
-        <h2>Projects</h2>
+  const web = projects.filter((p) => !p.isMobile).length
+  const mobile = projects.length - web
 
-        <div
-          style={{
-            display: "grid",
-            gridTemplateColumns: "repeat(auto-fill, minmax(300px, 1fr))",
-            gap: "20px",
-          }}
-        >
-          {projects.map((project, i) => (
-            <ProjectCard key={project.name} project={project} delay={i % 3} />
-          ))}
-        </div>
+  return (
+    <Section
+      id="projects"
+      title="Selected work"
+      intro={`${projects.length} builds — ${web} web platforms and ${mobile} mobile apps — each shipped for real users.`}
+    >
+      <div className="grid border-t border-line md:grid-cols-2 lg:grid-cols-3">
+        {projects.map((project, i) => (
+          <ProjectCard key={project.name} project={project} i={i} />
+        ))}
       </div>
-    </section>
-  );
+    </Section>
+  )
 }

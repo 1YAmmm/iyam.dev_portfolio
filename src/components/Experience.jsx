@@ -1,108 +1,51 @@
 import { experience } from '../data/portfolio'
+import { Section, gridCell, pad } from './ui'
 
 export default function Experience() {
+  const meta = [
+    ['Period', experience.period],
+    ['Company', experience.company],
+    ['Location', experience.location],
+  ]
+
   return (
-    <section
-      id="experience"
-      style={{ padding: 'clamp(60px, 8vw, 120px) clamp(1rem, 6vw, 4rem)', background: 'var(--bg)' }}
-    >
-      <div style={{ maxWidth: '1100px', margin: '0 auto' }}>
-        <p className="fade-in" style={{ fontFamily: '"DM Mono", monospace', fontSize: '11px', color: 'var(--accent)', letterSpacing: '2px', textTransform: 'uppercase', marginBottom: '12px' }}>
-          03 · Experience
-        </p>
-        <h2 className="fade-in" style={{ fontSize: 'clamp(28px, 4vw, 44px)', fontWeight: 600, letterSpacing: '-1px', marginBottom: '12px', color: 'var(--text)' }}>
-          Where I've worked
-        </h2>
-
-        {/* Experience card */}
-        <div
-          className="fade-in"
-          style={{
-            background: 'var(--surface)',
-            border: '0.5px solid var(--border)',
-            borderRadius: '24px',
-            padding: 'clamp(24px, 4vw, 40px)',
-            marginTop: '48px',
-            backdropFilter: 'blur(12px)',
-            position: 'relative',
-            overflow: 'hidden',
-          }}
-        >
-          {/* Accent top bar */}
-          <div style={{
-            position: 'absolute',
-            top: 0, left: 0, right: 0,
-            height: '2px',
-            background: 'linear-gradient(90deg, var(--accent), var(--teal))',
-          }} />
-
-          {/* Header */}
-          <div style={{
-            display: 'flex',
-            justifyContent: 'space-between',
-            alignItems: 'flex-start',
-            flexWrap: 'wrap',
-            gap: '12px',
-            marginBottom: '28px',
-          }}>
-            <div>
-              <div style={{ fontSize: '22px', fontWeight: 600, letterSpacing: '-0.4px', color: 'var(--text)' }}>
-                {experience.role}
-              </div>
-              <div style={{ fontSize: '14px', color: 'var(--text2)', marginTop: '4px' }}>
-                {experience.company} · {experience.location}
-              </div>
+    <Section id="experience" title="Where I've worked">
+      <div className="grid border-t border-line lg:grid-cols-12">
+        {/* Meta column */}
+        <dl className="fade-in lg:col-span-4 lg:border-r lg:border-line">
+          {meta.map(([k, v], i) => (
+            <div key={k} className={`pad-x py-5 ${i > 0 ? 'border-t border-line' : ''}`}>
+              <dt className="label text-muted">{k}</dt>
+              <dd className="mt-2 text-[15px] text-fg">{v}</dd>
             </div>
-            <div style={{
-              fontFamily: '"DM Mono", monospace',
-              fontSize: '12px',
-              color: 'var(--accent)',
-              background: 'var(--accent3)',
-              padding: '6px 12px',
-              borderRadius: '100px',
-              border: '0.5px solid rgba(124,109,250,0.25)',
-              whiteSpace: 'nowrap',
-            }}>
-              {experience.period}
-            </div>
+          ))}
+        </dl>
+
+        {/* Role */}
+        <div className="fade-in delay-1 border-t border-line lg:col-span-8 lg:border-t-0">
+          <div className="pad-x py-8 sm:py-10">
+            <h3 className="font-display text-3xl sm:text-4xl">{experience.role}</h3>
+            <p className="mt-4 max-w-2xl text-[15px] leading-[1.8] text-soft">{experience.description}</p>
           </div>
 
-          {/* Description */}
-          <p style={{ fontSize: '14px', color: 'var(--text2)', lineHeight: 1.8, marginBottom: '24px' }}>
-            {experience.description}
-          </p>
-
-          {/* Subjects */}
-          <p style={{ fontSize: '11px', color: 'var(--text3)', fontFamily: '"DM Mono", monospace', letterSpacing: '1px', marginBottom: '14px' }}>
-            SUBJECTS TAUGHT
-          </p>
-          <div style={{
-            display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fill, minmax(180px, 1fr))',
-            gap: '10px',
-          }}>
-            {experience.subjects.map((subj) => (
-              <div
+          <p className="label pad-x border-t border-line py-4">Subjects taught</p>
+          <ul className="grid border-t border-line sm:grid-cols-2 xl:grid-cols-3">
+            {experience.subjects.map((subj, i) => (
+              <li
                 key={subj}
-                style={{
-                  background: 'var(--surface2)',
-                  border: '0.5px solid var(--border)',
-                  borderRadius: '10px',
-                  padding: '10px 14px',
-                  fontSize: '13px',
-                  color: 'var(--text2)',
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '8px',
-                }}
+                className={`pad-x flex items-center gap-4 py-4 text-sm text-fg ${gridCell(i, experience.subjects.length, {
+                  base: 1,
+                  sm: 2,
+                  xl: 3,
+                })}`}
               >
-                <span style={{ width: '5px', height: '5px', borderRadius: '50%', background: 'var(--teal)', flexShrink: 0 }} />
+                <span className="label text-muted">{pad(i + 1)}</span>
                 {subj}
-              </div>
+              </li>
             ))}
-          </div>
+          </ul>
         </div>
       </div>
-    </section>
+    </Section>
   )
 }

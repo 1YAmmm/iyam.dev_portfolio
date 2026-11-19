@@ -1,135 +1,296 @@
-@import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,300&family=DM+Mono:wght@400;500&display=swap');
-
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
-/* ─── Design Tokens ─── */
-:root {
-  --bg: #0a0a0f;
-  --bg2: #111118;
-  --bg3: #1a1a24;
-  --surface: rgba(255, 255, 255, 0.04);
-  --surface2: rgba(255, 255, 255, 0.07);
-  --border: rgba(255, 255, 255, 0.08);
-  --border2: rgba(255, 255, 255, 0.14);
-  --text: #f0f0f5;
-  --text2: #a0a0b8;
-  --text3: #60607a;
-  --accent: #7c6dfa;
-  --accent2: #a594ff;
-  --accent3: rgba(124, 109, 250, 0.15);
-  --teal: #22d3b8;
-  --coral: #ff6b6b;
-  --amber: #ffb347;
-  --glow: rgba(124, 109, 250, 0.3);
-  --r: 16px;
-  --r2: 24px;
-  --r3: 12px;
+
+/* ─── Display font ──────────────────────────────────────────────────
+   QUINN (free for personal use, by arraf studio). Drop the font file at
+   public/fonts/Quinn.otf and every display heading switches to it.
+   Until then headings fall back to Archivo Black-weight.            */
+@font-face {
+  font-family: 'Quinn';
+  src: url('/fonts/Quinn.otf') format('opentype');
+  font-weight: 100 900;
+  font-display: swap;
 }
 
+/* ─── Design tokens ─────────────────────────────────────────────────
+   Palette: #06141B  #11212D  #253745  #4A5C6A  #9BA8AB  #CCD0CF
+   Stored as RGB channels so Tailwind opacity modifiers work.        */
+:root {
+  --c-bg: 6 20 27;          /* #06141B */
+  --c-surface: 17 33 45;    /* #11212D */
+  --c-raised: 37 55 69;     /* #253745 */
+  --c-muted: 74 92 106;     /* #4A5C6A */
+  --c-soft: 155 168 171;    /* #9BA8AB */
+  --c-fg: 204 208 207;      /* #CCD0CF */
+  --c-line: 155 168 171;
+  --line-a: 0.14;
+  --grid-a: 0.055;
+  --nav-h: 64px;
+  color-scheme: dark;
+}
+
+/* Whiteprint — the same six colors, inverted */
 .light {
-  --bg: #f5f5fa;
-  --bg2: #ebebf5;
-  --bg3: #ffffff;
-  --surface: rgba(0, 0, 0, 0.03);
-  --surface2: rgba(0, 0, 0, 0.055);
-  --border: rgba(0, 0, 0, 0.07);
-  --border2: rgba(0, 0, 0, 0.12);
-  --text: #0d0d1a;
-  --text2: #4a4a6a;
-  --text3: #8888a8;
-  --accent: #5b4ee8;
-  --accent2: #7c6dfa;
-  --accent3: rgba(91, 78, 232, 0.1);
-  --glow: rgba(91, 78, 232, 0.2);
+  --c-bg: 204 208 207;      /* #CCD0CF */
+  --c-surface: 218 221 220; /* #CCD0CF lifted */
+  --c-raised: 155 168 171;  /* #9BA8AB */
+  --c-muted: 74 92 106;     /* #4A5C6A */
+  --c-soft: 37 55 69;       /* #253745 */
+  --c-fg: 6 20 27;          /* #06141B */
+  --c-line: 6 20 27;
+  --line-a: 0.16;
+  --grid-a: 0.05;
+  color-scheme: light;
 }
 
 /* ─── Base ─── */
-*, *::before, *::after {
-  box-sizing: border-box;
+@layer base {
+  html {
+    -webkit-text-size-adjust: 100%;
+    /* registration crosses sit half outside the sheet; never let them scroll */
+    overflow-x: hidden;
+    overflow-x: clip;
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    html { scroll-behavior: smooth; }
+  }
+
+  body {
+    @apply bg-bg font-sans text-fg antialiased;
+    min-height: 100vh;
+    overflow-x: hidden;
+    transition: background-color 0.3s, color 0.3s;
+  }
+
+  /* Blueprint grid: 24px minor, 96px major, fading toward the edges */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    pointer-events: none;
+    background-image:
+      linear-gradient(rgb(var(--c-line) / calc(var(--grid-a) * 2)) 1px, transparent 1px),
+      linear-gradient(90deg, rgb(var(--c-line) / calc(var(--grid-a) * 2)) 1px, transparent 1px),
+      linear-gradient(rgb(var(--c-line) / var(--grid-a)) 1px, transparent 1px),
+      linear-gradient(90deg, rgb(var(--c-line) / var(--grid-a)) 1px, transparent 1px);
+    background-size: 96px 96px, 96px 96px, 24px 24px, 24px 24px;
+    background-position: center top;
+    -webkit-mask-image: radial-gradient(ellipse 90% 80% at 50% 35%, #000 35%, transparent 100%);
+    mask-image: radial-gradient(ellipse 90% 80% at 50% 35%, #000 35%, transparent 100%);
+  }
+
+  section[id] {
+    scroll-margin-top: var(--nav-h);
+  }
+
+  ::selection {
+    @apply bg-fg text-bg;
+  }
+
+  :focus-visible {
+    outline: 1px solid rgb(var(--c-fg));
+    outline-offset: 3px;
+  }
 }
 
-html {
-  scroll-behavior: smooth;
+/* ─── Components ─── */
+@layer components {
+  /* The drawing sheet: centered column with side rails */
+  .sheet {
+    @apply relative mx-auto w-full max-w-sheet border-x border-line;
+  }
+
+  .pad-x {
+    @apply px-5 sm:px-8 lg:px-12;
+  }
+
+  .font-display {
+    font-weight: 900;
+    font-synthesis: none;
+    letter-spacing: -0.01em;
+    text-transform: uppercase;
+  }
+
+  /* Monospace annotation label */
+  .label {
+    @apply font-mono text-[11px] uppercase leading-none tracking-[0.14em] text-soft;
+  }
+
+  .tag {
+    @apply inline-flex items-center border border-line px-2 py-1 font-mono text-[10px] uppercase leading-none tracking-[0.08em] text-soft;
+  }
+
+  .btn {
+    @apply inline-flex h-11 items-center gap-2.5 border px-5 font-mono text-xs uppercase tracking-[0.12em] transition-colors duration-200;
+  }
+  .btn-primary {
+    @apply btn border-fg bg-fg text-bg hover:border-soft hover:bg-soft;
+  }
+  .btn-ghost {
+    @apply btn border-line-strong text-fg hover:border-fg hover:bg-fg/5;
+  }
+
+  /* Corner brackets — the "+" registration marks of a drawing */
+  .brackets {
+    @apply relative;
+  }
+  .brackets::after {
+    --b: rgb(var(--c-fg) / 0.55);
+    --s: 10px;
+    content: '';
+    position: absolute;
+    inset: -1px;
+    pointer-events: none;
+    background:
+      linear-gradient(var(--b), var(--b)) top left / var(--s) 1px,
+      linear-gradient(var(--b), var(--b)) top left / 1px var(--s),
+      linear-gradient(var(--b), var(--b)) top right / var(--s) 1px,
+      linear-gradient(var(--b), var(--b)) top right / 1px var(--s),
+      linear-gradient(var(--b), var(--b)) bottom left / var(--s) 1px,
+      linear-gradient(var(--b), var(--b)) bottom left / 1px var(--s),
+      linear-gradient(var(--b), var(--b)) bottom right / var(--s) 1px,
+      linear-gradient(var(--b), var(--b)) bottom right / 1px var(--s);
+    background-repeat: no-repeat;
+  }
+
+  /* Small "+" where a horizontal rule meets the sheet rails */
+  .cross {
+    @apply pointer-events-none absolute h-[11px] w-[11px] text-soft;
+    background:
+      linear-gradient(currentColor, currentColor) center / 100% 1px no-repeat,
+      linear-gradient(currentColor, currentColor) center / 1px 100% no-repeat;
+  }
+
+  /* Dense grid used inside project "stages" */
+  .grid-dense {
+    background-image:
+      linear-gradient(rgb(var(--c-line) / calc(var(--grid-a) * 1.6)) 1px, transparent 1px),
+      linear-gradient(90deg, rgb(var(--c-line) / calc(var(--grid-a) * 1.6)) 1px, transparent 1px);
+    background-size: 16px 16px;
+    background-position: center center;
+  }
+
+  /* Dimension line: |←—— label ——→| */
+  .dim {
+    @apply flex items-center gap-3 text-muted;
+  }
+  .dim::before,
+  .dim::after {
+    content: '';
+    @apply h-px flex-1 bg-current;
+  }
+  .dim-ends {
+    @apply relative;
+  }
+  .dim-ends::before,
+  .dim-ends::after {
+    content: '';
+    @apply absolute top-1/2 h-2.5 w-px -translate-y-1/2 bg-muted;
+  }
+  .dim-ends::before { left: 0; }
+  .dim-ends::after { right: 0; }
 }
 
-body {
-  font-family: 'DM Sans', sans-serif;
-  background: var(--bg);
-  color: var(--text);
-  min-height: 100vh;
-  overflow-x: hidden;
-  transition: background 0.3s, color 0.3s;
-  margin: 0;
-  padding: 0;
+/* ─── iPhone frame ─────────────────────────────────────────────────
+   Everything is sized in em; the component sets font-size = width/100. */
+.phone {
+  position: relative;
+  padding: 1em;
+  border-radius: 16.5em;
+  background: linear-gradient(150deg, #4a5c6a 0%, #253745 38%, #11212d 70%, #253745 100%);
+  box-shadow:
+    0 0 0 1px rgb(204 208 207 / 0.16),
+    inset 0 0 0 1px rgb(204 208 207 / 0.22),
+    0 3em 7em -2em rgb(0 0 0 / 0.6);
+}
+.light .phone {
+  box-shadow:
+    0 0 0 1px rgb(6 20 27 / 0.2),
+    inset 0 0 0 1px rgb(204 208 207 / 0.3),
+    0 3em 6em -2.5em rgb(6 20 27 / 0.45);
+}
+.phone__bezel {
+  border-radius: 15.5em;
+  background: #000;
+  padding: 2.6em;
+}
+.phone__screen {
+  position: relative;
+  overflow: hidden;
+  aspect-ratio: 390 / 844;
+  border-radius: 12.9em;
+  background: #06141b;
+  isolation: isolate;
+}
+.phone__island {
+  position: absolute;
+  z-index: 3;
+  top: 2.3em;
+  left: 50%;
+  width: 30em;
+  height: 8.6em;
+  transform: translateX(-50%);
+  border-radius: 99em;
+  background: #000;
+}
+.phone__status {
+  position: absolute;
+  z-index: 2;
+  inset: 0 0 auto 0;
+  height: 13em;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.6em 8em 0 10.5em;
+  transition: background-color 0.4s, color 0.4s;
+}
+.phone__time {
+  font: 600 5.4em/1 -apple-system, 'SF Pro Text', system-ui, sans-serif;
+  letter-spacing: -0.01em;
+}
+.phone__status svg {
+  height: 4.4em;
+  width: auto;
+}
+.phone__viewport {
+  position: absolute;
+  inset: 13em 0 0 0;
+  overflow: hidden;
+}
+.phone__btn {
+  position: absolute;
+  width: 1em;
+  border-radius: 0.5em;
+  background: linear-gradient(90deg, #253745, #4a5c6a);
 }
 
-::selection {
-  background: var(--accent);
-  color: #fff;
-}
-
-/* ─── Scroll Animation ─── */
+/* ─── Scroll reveal ─── */
 .fade-in {
   opacity: 0;
-  transform: translateY(24px);
-  transition: opacity 0.7s ease, transform 0.7s ease;
+  transform: translateY(16px);
+  transition: opacity 0.7s cubic-bezier(0.2, 0.7, 0.2, 1), transform 0.7s cubic-bezier(0.2, 0.7, 0.2, 1);
 }
-
 .fade-in.visible {
   opacity: 1;
   transform: none;
 }
+.delay-1 { transition-delay: 0.08s; }
+.delay-2 { transition-delay: 0.16s; }
+.delay-3 { transition-delay: 0.24s; }
 
-.delay-1 { transition-delay: 0.1s; }
-.delay-2 { transition-delay: 0.2s; }
-.delay-3 { transition-delay: 0.3s; }
-.delay-4 { transition-delay: 0.4s; }
-
-/* ─── Pulse dot animation ─── */
-@keyframes pulse {
-  0%, 100% { opacity: 1; transform: scale(1); }
-  50% { opacity: 0.5; transform: scale(0.8); }
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.25; }
+}
+.animate-blink {
+  animation: blink 1.8s steps(1) infinite;
 }
 
-.animate-pulse-dot {
-  animation: pulse 2s ease-in-out infinite;
-}
-
-/* ─── Scroll indicator ─── */
-@keyframes scrollAnim {
-  0%, 100% { transform: scaleY(1); opacity: 1; }
-  50% { transform: scaleY(0.5); opacity: 0.4; }
-}
-
-.animate-scroll-line {
-  animation: scrollAnim 2s ease-in-out infinite;
-}
-
-/* ─── Input base styles ─── */
-.portfolio-input {
-  background: var(--surface);
-  border: 0.5px solid var(--border);
-  border-radius: var(--r3);
-  padding: 14px 16px;
-  font-size: 14px;
-  color: var(--text);
-  font-family: 'DM Sans', sans-serif;
-  transition: border-color 0.2s, box-shadow 0.2s;
-  outline: none;
-  width: 100%;
-}
-
-.portfolio-input:focus {
-  border-color: var(--accent);
-  box-shadow: 0 0 0 3px var(--accent3);
-}
-
-.portfolio-input::placeholder {
-  color: var(--text3);
-}
-
-textarea.portfolio-input {
-  resize: vertical;
-  min-height: 120px;
+@media (prefers-reduced-motion: reduce) {
+  .fade-in { opacity: 1; transform: none; transition: none; }
+  .animate-blink { animation: none; }
+  *, *::before, *::after { transition-duration: 0.01ms !important; }
 }

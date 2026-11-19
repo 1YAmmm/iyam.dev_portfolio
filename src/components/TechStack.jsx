@@ -1,149 +1,122 @@
 import { techStack } from '../data/portfolio'
+import { Section, gridCell, pad } from './ui'
 
-// Inline SVG renderers per tech type
-function TechSVG({ item }) {
-  const { color, label, bg, type, name } = item
+// Monochrome line glyphs — they inherit the theme color so the grid stays calm.
+const S = { fill: 'none', stroke: 'currentColor', strokeWidth: 1.5, strokeLinecap: 'round', strokeLinejoin: 'round' }
 
-  if (type === 'tailwind') {
-    return (
-      <svg viewBox="0 0 32 32" fill="none" width="28" height="28">
-        <rect width="32" height="32" rx="8" fill="#38BDF8" fillOpacity=".15" />
-        <path d="M8 12.5c1.3-5.3 5.3-7.9 8-5.3 2.7 2.6.7 7.9-2.7 8 3.4 0 6.7-2.6 8-7.9" stroke="#38BDF8" strokeWidth="2" strokeLinecap="round" fill="none" />
-        <path d="M8 19.5c1.3-5.3 5.3-7.9 8-5.3 2.7 2.6.7 7.9-2.7 8 3.4 0 6.7-2.6 8-7.9" stroke="#38BDF8" strokeWidth="2" strokeLinecap="round" fill="none" />
-      </svg>
-    )
+function Glyph({ item }) {
+  const box = { viewBox: '0 0 32 32', width: 30, height: 30, 'aria-hidden': true }
+
+  switch (item.type) {
+    case 'react':
+    case 'react-native': {
+      const rot = item.type === 'react' ? [0, 60, 120] : [30, 90, 150]
+      return (
+        <svg {...box}>
+          <circle cx="16" cy="16" r="2" fill="currentColor" />
+          {rot.map((r) => (
+            <ellipse key={r} cx="16" cy="16" rx="12" ry="4.6" {...S} transform={`rotate(${r} 16 16)`} />
+          ))}
+        </svg>
+      )
+    }
+    case 'nextjs':
+      return (
+        <svg {...box}>
+          <circle cx="16" cy="16" r="12" {...S} />
+          <path d="M12 21.5V10.5l10 13.5M20.5 10.5v7" {...S} />
+        </svg>
+      )
+    case 'tailwind':
+      return (
+        <svg {...box}>
+          <path d="M6 14c1.4-5 4.8-6.7 8-4.6 2 1.3 2.6 3.6 6 3.6 2.6 0 4.6-1.4 6-4" {...S} />
+          <path d="M6 23c1.4-5 4.8-6.7 8-4.6 2 1.3 2.6 3.6 6 3.6 2.6 0 4.6-1.4 6-4" {...S} />
+        </svg>
+      )
+    case 'firebase':
+      return (
+        <svg {...box}>
+          <path d="M9 25L12 6l4.5 8.5L19 10l4 15-7 3.5L9 25z" {...S} />
+        </svg>
+      )
+    case 'appwrite':
+      return (
+        <svg {...box}>
+          <circle cx="16" cy="16" r="9" {...S} />
+          <circle cx="16" cy="16" r="3.2" {...S} />
+        </svg>
+      )
+    case 'supabase':
+      return (
+        <svg {...box}>
+          <path d="M17.5 4L7 18h9l-1.5 10L25 14h-9l1.5-10z" {...S} />
+        </svg>
+      )
+    case 'vercel':
+      return (
+        <svg {...box}>
+          <path d="M16 7l10.5 18h-21L16 7z" {...S} />
+        </svg>
+      )
+    case 'github':
+      return (
+        <svg {...box}>
+          <path d="M12.5 25.5c-5 1.5-5-2.5-7-3m14 6v-3.9a3.4 3.4 0 00-.9-2.6c3.1-.4 6.4-1.5 6.4-6.9a5.4 5.4 0 00-1.5-3.7 5 5 0 00-.1-3.7s-1.2-.4-3.9 1.4a13.4 13.4 0 00-7 0C9.8 6.3 8.6 6.7 8.6 6.7a5 5 0 00-.1 3.7A5.4 5.4 0 007 14.1c0 5.4 3.3 6.5 6.4 6.9a3.4 3.4 0 00-.9 2.6v3.9" {...S} />
+        </svg>
+      )
+    case 'hardware':
+      return (
+        <svg {...box}>
+          <rect x="9" y="9" width="14" height="14" rx="1.5" {...S} />
+          <rect x="13" y="13" width="6" height="6" {...S} />
+          <path d="M13 5v4M19 5v4M13 23v4M19 23v4M5 13h4M5 19h4M23 13h4M23 19h4" {...S} />
+        </svg>
+      )
+    case 'claude':
+      return (
+        <svg {...box}>
+          <path d="M16 5v22M5 16h22M8.2 8.2l15.6 15.6M23.8 8.2L8.2 23.8" {...S} />
+        </svg>
+      )
+    default:
+      return (
+        <svg {...box}>
+          <rect x="3.5" y="7.5" width="25" height="17" rx="1.5" {...S} />
+          <text x="16" y="17" dominantBaseline="middle" textAnchor="middle" fontSize="8.5" fontWeight="600"
+            fill="currentColor" fontFamily='"JetBrains Mono", monospace'>
+            {item.label || item.name.slice(0, 3).toUpperCase()}
+          </text>
+        </svg>
+      )
   }
-
-  if (type === 'react' || type === 'react-native') {
-    const rotations = type === 'react' ? [0, 60, 120] : [30, 90, 150]
-    return (
-      <svg viewBox="0 0 32 32" fill="none" width="28" height="28">
-        <rect width="32" height="32" rx="8" fill="#61DAFB" fillOpacity=".12" />
-        <circle cx="16" cy="16" r="3" fill="#61DAFB" />
-        {rotations.map((r) => (
-          <ellipse key={r} cx="16" cy="16" rx="10" ry="4" stroke="#61DAFB" strokeWidth="1.5" fill="none" transform={`rotate(${r} 16 16)`} />
-        ))}
-      </svg>
-    )
-  }
-
-  if (type === 'firebase') {
-    return (
-      <svg viewBox="0 0 32 32" fill="none" width="28" height="28">
-        <rect width="32" height="32" rx="8" fill="#FFCA28" fillOpacity=".15" />
-        <path d="M10 22L13 10l4 6 3-9 4 14H10z" stroke="#FFCA28" strokeWidth="1.5" strokeLinejoin="round" fill="#FFCA28" fillOpacity=".6" />
-      </svg>
-    )
-  }
-
-  if (type === 'appwrite') {
-    return (
-      <svg viewBox="0 0 32 32" fill="none" width="28" height="28">
-        <rect width="32" height="32" rx="8" fill="#FD366E" fillOpacity=".15" />
-        <circle cx="16" cy="16" r="6" stroke="#FD366E" strokeWidth="2" fill="none" />
-        <circle cx="16" cy="16" r="2.5" fill="#FD366E" />
-      </svg>
-    )
-  }
-
-  if (type === 'vercel') {
-    return (
-      <svg viewBox="0 0 32 32" fill="none" width="28" height="28">
-        <rect width="32" height="32" rx="8" fill="#888" fillOpacity=".15" />
-        <path d="M16 8l9 15H7L16 8z" fill="currentColor" fillOpacity=".7" />
-      </svg>
-    )
-  }
-
-  if (type === 'github') {
-    return (
-      <svg viewBox="0 0 32 32" fill="none" width="28" height="28">
-        <rect width="32" height="32" rx="8" fill="#888" fillOpacity=".12" />
-        <path d="M16 7a9 9 0 00-2.846 17.54c.45.083.615-.195.615-.433 0-.214-.008-.78-.012-1.53-2.503.545-3.031-1.206-3.031-1.206-.409-1.04-1-1.317-1-1.317-.817-.559.062-.547.062-.547.904.064 1.38.929 1.38.929.803 1.375 2.107.978 2.62.748.082-.581.314-.978.571-1.203-1.999-.227-4.102-1-4.102-4.453 0-.983.351-1.787.927-2.417-.093-.228-.402-1.143.088-2.383 0 0 .756-.242 2.477.922A8.626 8.626 0 0116 11.9c.765.004 1.535.103 2.254.302 1.72-1.164 2.475-.922 2.475-.922.491 1.24.182 2.155.09 2.383.577.63.926 1.434.926 2.417 0 3.462-2.106 4.224-4.112 4.447.323.278.611.828.611 1.668 0 1.203-.01 2.175-.01 2.47 0 .24.162.52.62.432A9.001 9.001 0 0016 7z" fill="currentColor" fillOpacity=".7" />
-      </svg>
-    )
-  }
-
-  if (type === 'claude') {
-    return (
-      <svg viewBox="0 0 32 32" fill="none" width="28" height="28">
-        <rect width="32" height="32" rx="8" fill="#cc785c" fillOpacity=".15" />
-        <circle cx="16" cy="14" r="5" stroke="#cc785c" strokeWidth="1.5" fill="none" />
-        <path d="M10 24c0-3.3 2.7-6 6-6s6 2.7 6 6" stroke="#cc785c" strokeWidth="1.5" strokeLinecap="round" fill="none" />
-      </svg>
-    )
-  }
-
-  // Default: text label badge
-  return (
-    <svg viewBox="0 0 32 32" fill="none" width="28" height="28">
-      <rect width="32" height="32" rx="8" fill={bg || color} fillOpacity=".15" />
-      <text x="50%" y="55%" dominantBaseline="middle" textAnchor="middle"
-        fontSize="11" fontWeight="700" fill={color} fontFamily="DM Mono, monospace">
-        {label || name.slice(0, 3).toUpperCase()}
-      </text>
-    </svg>
-  )
 }
 
 export default function TechStack() {
   return (
-    <section
+    <Section
       id="stack"
-      style={{ padding: 'clamp(60px, 8vw, 120px) clamp(1rem, 6vw, 4rem)', background: 'var(--bg2)' }}
+      title="Technologies I work with"
+      intro="Spanning frontend, backend, mobile and cloud — a practical toolkit for shipping modern software."
     >
-      <div style={{ maxWidth: '1100px', margin: '0 auto' }}>
-        <p className="fade-in" style={{ fontFamily: '"DM Mono", monospace', fontSize: '11px', color: 'var(--accent)', letterSpacing: '2px', textTransform: 'uppercase', marginBottom: '12px' }}>
-          02 · Stack
-        </p>
-        <h2 className="fade-in" style={{ fontSize: 'clamp(28px, 4vw, 44px)', fontWeight: 600, letterSpacing: '-1px', marginBottom: '12px', color: 'var(--text)' }}>
-          Technologies I work with
-        </h2>
-        <p className="fade-in" style={{ fontSize: '15px', color: 'var(--text2)', maxWidth: '480px', lineHeight: 1.7 }}>
-          Spanning frontend, backend, mobile, and cloud — a practical toolkit for building modern software.
-        </p>
-
-        <div style={{
-          display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fill, minmax(110px, 1fr))',
-          gap: '12px',
-          marginTop: '48px',
-        }}>
-          {techStack.map((item, i) => (
-            <div
-              key={item.name}
-              className={`fade-in${i % 3 === 1 ? ' delay-1' : i % 3 === 2 ? ' delay-2' : ''}`}
-              style={{
-                background: 'var(--surface)',
-                border: '0.5px solid var(--border)',
-                borderRadius: '12px',
-                padding: '16px 12px',
-                display: 'flex',
-                flexDirection: 'column',
-                alignItems: 'center',
-                gap: '10px',
-                transition: 'background 0.25s, border-color 0.25s, transform 0.25s',
-                cursor: 'default',
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.background = 'var(--surface2)'
-                e.currentTarget.style.borderColor = 'var(--border2)'
-                e.currentTarget.style.transform = 'translateY(-4px)'
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.background = 'var(--surface)'
-                e.currentTarget.style.borderColor = 'var(--border)'
-                e.currentTarget.style.transform = 'translateY(0)'
-              }}
-            >
-              <TechSVG item={item} />
-              <span style={{ fontSize: '11px', color: 'var(--text2)', fontFamily: '"DM Mono", monospace', textAlign: 'center' }}>
-                {item.name}
-              </span>
-            </div>
-          ))}
-        </div>
-      </div>
-    </section>
+      <ul className="grid grid-cols-3 border-t border-line sm:grid-cols-5">
+        {techStack.map((item, i) => (
+          <li
+            key={item.name}
+            className={`fade-in group relative flex aspect-square flex-col items-center justify-center gap-4 text-soft transition-colors duration-300 hover:bg-surface/70 hover:text-fg lg:aspect-[2/1] ${gridCell(
+              i,
+              techStack.length,
+              { base: 3, sm: 5 }
+            )}`}
+          >
+            <span className="label absolute left-3 top-3 text-[10px] text-muted">T.{pad(i + 1)}</span>
+            <Glyph item={item} />
+            <span className="px-2 text-center font-mono text-[10px] uppercase tracking-[0.08em]">
+              {item.name}
+            </span>
+          </li>
+        ))}
+      </ul>
+    </Section>
   )
 }
